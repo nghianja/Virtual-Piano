@@ -1,18 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+
 body {
     background-color: darkslategrey;
     text-align: center;
 }
 
-kbd {
+.white-keys kbd {
     background-color: white;
-    height: 210px;
+    height: 60px;
     width: 70px;
     display: inline-block;
     margin-left: -4px;
+    padding-top: 160px;
     border: 1px solid;
     text-align: center;
+    font-family: 'Permanent Marker', cursive;
 }
 
 .container {
-    margin: 210px 0;
+    position: relative;
+    top: 210px;
+}
+
+.black-keys kbd {
+    background-color: black;
+    height: 60px;
+    width: 50px;
+    display: inline-block;
+    padding-top: 80px;
+    text-align: center;
+    font-family: 'Permanent Marker', cursive;
+    color: white;
+}
+
+.black-keys {
+    position: relative;
+    top: -222px;
+    left: -75px;
+}
+
+#E {
+    position: relative;
+    left: 20px;
+}
+#T {
+    position: relative;
+    left: 105px;
+}
+#Y {
+    position: relative;
+    left: 125px;
+}
+#U {
+    position: relative;
+    left: 145px;
 }

@@ -43,7 +43,7 @@ async function stageTest() {
     let result = await hs.testPage(page,
         // Test #1 - audio object creation check
         () => {
-            let keys = ['a', 's', 'd', 'f', 'g', 'h', 'j'];
+            let keys = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'w', 'e', 't', 'y', 'u' ];
             keys.forEach(function (key) {
                 hs.press(key);
             });
@@ -53,14 +53,14 @@ async function stageTest() {
             if (audioElements === 0) {
                 return hs.wrong(`Сannot find the audio objects. Note that audio objects must be created exactly when keys are pressed.`);
             } else if (audioElements < keys.length) {
-                return hs.wrong(`There are not enough audio objects, ${audioElements} of 7 objects were found`);
+                return hs.wrong(`There are not enough audio objects, ${audioElements} of 12 objects were found`);
             } else if (audioElements > keys.length) {
                 return hs.wrong(`There are too many audio objects, found ${audioElements} instead of 12 objects`);
             }
             return hs.correct();
         },
 
-        // Test #2 - check div element with class container + 7 elements inside
+        // Test #2 - check div element with class 'container' + 2 elements inside
         () => {
             let containerElements = document.getElementsByClassName('container');
             if (containerElements.length === 0) {
@@ -84,41 +84,83 @@ async function stageTest() {
 
             let len = this.innerDivElements.length;
 
-            return len === 7 ?
+            return len === 2 ?
                 hs.correct() :
-                hs.wrong(`Div with class 'container' should contain 7 elements, found: ${len}`)
+                hs.wrong(`Div with class 'container' should contain 2 elements, found: ${len}`)
         },
 
-        // Test #3 - check if all 7 elements are <kbd> elements
+        // Test #3 - check if all 2 elements are <div> elements
+        () => {
+            let i = 0;
+            for (let elem of this.innerDivElements) {
+                i++;
+                elem = elem.nodeName.toLowerCase();
+                if (elem !== 'div') {
+                    return hs.wrong(`Element inside container #${i} is not <div> element, it's <${elem}>`);
+                }
+            }
+            return hs.correct();
+        },
+
+        // Test #4 - check div element with class 'white-keys' + 7 elements inside
+        () => {
+            let whiteKeysElement = document.getElementsByClassName('white-keys');
+            if (whiteKeysElement.length === 0) {
+                return hs.wrong(`Cannot find element with class 'white-keys'`);
+            } else if (whiteKeysElement.length > 1) {
+                return hs.wrong(`Found ${whiteKeysElement.length} elements with class 'white-keys'` +
+                    `, the page should contain just a single such element.`);
+            }
+
+            let whiteKeys = whiteKeysElement[0];
+            this.div = whiteKeys;
+
+            let contName = whiteKeys.nodeName.toLowerCase();
+            if (contName !== 'div') {
+                return hs.wrong(`Cannot find 'div' element with class 'white-keys'.`);
+            }
+
+            let containerNodes = Array.from(whiteKeys.childNodes);
+            this.innerDivElements = containerNodes.filter(
+                e => e.nodeType === Node.ELEMENT_NODE);
+
+            let len = this.innerDivElements.length;
+
+            return len === 7 ?
+                hs.correct() :
+                hs.wrong(`Div with class 'white-keys' should contain 7 elements, found: ${len}`)
+        },
+
+        // Test #5 - check if all 7 elements are <kbd> elements
         () => {
             let i = 0;
             for (let elem of this.innerDivElements) {
                 i++;
                 elem = elem.nodeName.toLowerCase();
                 if (elem !== 'kbd') {
-                    return hs.wrong(`Element #${i} is not <kbd> element, it's <${elem}>`);
+                    return hs.wrong(`Element #${i} inside div with class 'white-keys' is not <kbd> element, it's <${elem}>`);
                 }
             }
             return hs.correct();
         },
 
-        // Test #4 - check if all 7 elements contain a single letter
+        // Test #6 - check if all 7 elements contain a single letter
         () => {
             let i = 0;
             for (let elem of this.innerDivElements) {
                 i++;
                 elem = elem.innerHTML;
                 if (elem.length === 0) {
-                    return hs.wrong(`Element #${i} is empty, but should contain a single letter.`);
+                    return hs.wrong(`Element #${i} inside div with class 'white-keys' is empty, but should contain a single letter.`);
                 } else if (elem.length > 1) {
-                    return hs.wrong(`Element #${i} contains ${elem.length} symbols, ` +
+                    return hs.wrong(`Element #${i} inside div with class 'white-keys' contains ${elem.length} symbols, ` +
                         `but should contain a single letter. The text inside element is:\n"${elem}"`);
                 }
             }
             return hs.correct();
         },
 
-        // Test 5 - Test if all 7 elements have the same top y-coordinate
+        // Test #7 - Test if all elements have the same top y-coordinate
         // (located on a single horizontal line)
         () => {
             let referenceTop = this.innerDivElements[0].getBoundingClientRect().top;
@@ -135,13 +177,13 @@ async function stageTest() {
             return hs.correct();
         },
 
-        // Test 6 - Test if all 7 elements are located in the middle
+        // Test #8 - Test if all elements are located in the middle
         () => {
             let width = window.innerWidth;
             let height = window.innerHeight;
 
             let mostLeftPx = this.innerDivElements[0].getBoundingClientRect().left;
-            let mostRightPx = this.innerDivElements[6].getBoundingClientRect().right;
+            let mostRightPx = this.innerDivElements[2].getBoundingClientRect().right;
 
             let freeSpaceOnLeft = mostLeftPx;
             let freeSpaceOnRight = width - mostRightPx;
@@ -170,7 +212,7 @@ async function stageTest() {
             return hs.correct();
         },
 
-        // Test 7 - Test if all elements have border
+        // Test #9 - Test if all elements have border
         () => {
             let i = 0;
             for (let elem of this.innerDivElements) {
@@ -184,7 +226,7 @@ async function stageTest() {
             return hs.correct()
         },
 
-        // Test 8 - Test if all element's background color is white and
+        // Test #10 - Test if 7 element's background color is white and
         // body's background in not white
         () => {
             function getRealColor(elem) {
@@ -227,7 +269,7 @@ async function stageTest() {
             return hs.correct()
         },
 
-        // Test 9 - Test display, width, height
+        // Test #11 - Test display, width, height
         () => {
             let i = 0;
             for (let elem of this.innerDivElements) {
@@ -251,7 +293,143 @@ async function stageTest() {
                 }
             }
             return hs.correct()
-        }
+        },
+
+        // Test #12 - check div element with class 'black-keys' + 5 elements inside
+        () => {
+            let blackKeysElement = document.getElementsByClassName('black-keys');
+            if (blackKeysElement.length === 0) {
+                return hs.wrong(`Cannot find element with class 'black-keys'`);
+            } else if (blackKeysElement.length > 1) {
+                return hs.wrong(`Found ${blackKeysElement.length} elements with class 'black-keys'` +
+                    `, the page should contain just a single such element.`);
+            }
+
+            let blackKeys = blackKeysElement[0];
+            this.div = blackKeys;
+
+            let contName = blackKeys.nodeName.toLowerCase();
+            if (contName !== 'div') {
+                return hs.wrong(`Cannot find 'div' element with class 'black-keys'.`);
+            }
+
+            let containerNodes = Array.from(blackKeys.childNodes);
+            this.innerDivElements = containerNodes.filter(
+                e => e.nodeType === Node.ELEMENT_NODE);
+
+            let len = this.innerDivElements.length;
+
+            return len === 5 ?
+                hs.correct() :
+                hs.wrong(`Div with class 'black-keys' should contain 5 elements, found: ${len}`)
+        },
+
+        // Test #13 - check if all 5 elements are <kbd> elements
+        () => {
+            let i = 0;
+            for (let elem of this.innerDivElements) {
+                i++;
+                elem = elem.nodeName.toLowerCase();
+                if (elem !== 'kbd') {
+                    return hs.wrong(`Element #${i} is not <kbd> element, it's <${elem}>`);
+                }
+            }
+            return hs.correct();
+        },
+
+        // Test #14 - check if all 5 elements contain a single letter
+        () => {
+            let i = 0;
+            for (let elem of this.innerDivElements) {
+                i++;
+                elem = elem.innerHTML;
+                if (elem.length === 0) {
+                    return hs.wrong(`Element #${i} is empty, but should contain a single letter.`);
+                } else if (elem.length > 1) {
+                    return hs.wrong(`Element #${i} contains ${elem.length} symbols, ` +
+                        `but should contain a single letter. The text inside element is:\n"${elem}"`);
+                }
+            }
+            return hs.correct();
+        },
+
+        // Test #15 - Test display
+        () => {
+            let i = 0;
+            for (let elem of this.innerDivElements) {
+                i++;
+                let currDisplay = window.getComputedStyle(elem).display;
+                if (currDisplay !== 'inline-block') {
+                    return hs.wrong(`Looks like piano's element #${i} ` +
+                        `has display style = '${currDisplay}'. 
+                        It should be 'inline-block' and different in size from the white keys.`);
+                }
+            }
+            return hs.correct()
+        },
+
+        // Test #16 - Test if the background color of 5 elements is black
+        () => {
+            function getRealColor(elem) {
+                while (elem) {
+                    let color = window.getComputedStyle(elem).backgroundColor;
+                    if (color !== "rgba(0, 0, 0, 0)") {
+                        let match = color.match(/^rgba?\((\d+), (\d+), (\d+)(, \d+)?\)$/i);
+                        return {
+                            red: Number(match[1]),
+                            green: Number(match[2]),
+                            blue: Number(match[3]),
+                            hex: Number(match[1]) * 65536 + Number(match[2]) * 256 + Number(match[3])
+                        };
+                    }
+                    elem = elem.parentElement;
+                }
+                return null;
+            }
+
+            let i = 0;
+            for (let elem of this.innerDivElements) {
+                i++;
+                let currColor = getRealColor(elem);
+                if (currColor.hex !== 0x000000) {
+                    return hs.wrong(`Looks like piano's element #${i} ` +
+                        `have non-black background color. It should be colored black.`);
+                }
+            }
+            return hs.correct()
+        },
+
+
+        // Test #17 - Test if the color of 5 elements is not black
+        () => {
+            function getRealColor(elem) {
+                while (elem) {
+                    let color = window.getComputedStyle(elem).getPropertyValue('color');
+                    if (color !== "rgba(0, 0, 0, 0)") {
+                        let match = color.match(/^rgba?\((\d+), (\d+), (\d+)(, \d+)?\)$/i);
+                        return {
+                            red: Number(match[1]),
+                            green: Number(match[2]),
+                            blue: Number(match[3]),
+                            hex: Number(match[1]) * 65536 + Number(match[2]) * 256 + Number(match[3])
+                        };
+                    }
+                    elem = elem.parentElement;
+                }
+                return null;
+            }
+
+            let i = 0;
+            for (let elem of this.innerDivElements) {
+                i++;
+                let currColor = getRealColor(elem);
+                if (currColor.hex === 0x000000) {
+                    return hs.wrong("Looks like the black key name color is not specified or it is black. " +
+                        "The color of the key name can be any color, but not black.");
+                }
+            }
+            return hs.correct()
+        },
     );
 
     await browser.close();
